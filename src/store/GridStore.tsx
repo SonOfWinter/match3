@@ -282,7 +282,6 @@ export class GridStore {
                 }
             }
         }
-        //console.log(cellsToRemove);
         return cellsToRemove.sort((a, b) => {
             if (a.y > b.y) {
                 return -1;
@@ -291,7 +290,6 @@ export class GridStore {
             } else if (a.x < b.x) {
                 return -1;
             }
-            // a doit être égal à b
             return 0;
         });
     }
@@ -302,7 +300,6 @@ export class GridStore {
         for (let x: number = 0; x < squareSize; x++) {
             for (let y: number = 0; y < squareSize; y++) {
                 if (this.grid[x][y].top < 0) {
-                    //console.log('move ' + x+ ':'+y+ ' from ' + this.grid[x][y].top +  ' to ' + ((7 - y) * 66));
                     this.grid[x][y].top = (7 - y) * 66;
                 }
             }
@@ -311,8 +308,6 @@ export class GridStore {
 
     @action.bound
     removeMatches(matches: SimpleCell[]) {
-        //console.log('removeMatches');
-        //console.log(matches);
         matches.forEach(simpleCell => {
             this.remove(simpleCell.x, simpleCell.y);
         });
@@ -333,7 +328,6 @@ export class GridStore {
     @action.bound
     fillGrid(matches: SimpleCell[])
     {
-        //console.log('fillGrid');
         for(let x:number = 0; x < squareSize; x++) {
             let newY: number = 7;
             const yMatches = matches.filter(m => m.x === x);
@@ -342,7 +336,6 @@ export class GridStore {
                     ...this.getCell(x, newY, false),
                     top: (((7 - newY) * 66) - 528)
                 }
-                //console.log(newCell);
                 this.grid[x][newY] = newCell;
                 newY--;
             })
@@ -351,7 +344,6 @@ export class GridStore {
 
     @action.bound
     switchCellData(fx: number, fy: number, sx: number, sy: number, isRevert: boolean = false) {
-        //console.log('switchCellData ' + fx + ':' + fy + ' ' + sx + ':' + sy);
         let first = {...this.grid[fx][fy]};
         let second = {...this.grid[sx][sy]};
         this.grid[fx][fy] = {
@@ -382,10 +374,7 @@ export class GridStore {
 
     @action.bound
     revert(fx: number, fy: number, sx: number, sy: number) {
-        //console.log('revert');
         let first = {...this.grid[fx][fy]};
-        // revert
-        //console.log({...this.grid[fx][fy]});
         let second = {...this.grid[sx][sy]};
         this.grid[fx][fy] = {
             ...first,
@@ -395,8 +384,6 @@ export class GridStore {
             left: sx  * 66,
             zIndex: 7 - sy
         };
-        //console.log({...this.grid[fx][fy]});
-        //console.log({...this.grid[sx][sy]});
         this.grid[sx][sy] = {
             ...second,
             x: fx,
@@ -405,7 +392,6 @@ export class GridStore {
             left: fx  * 66,
             zIndex: 7 - fy
         };
-        //console.log({...this.grid[sx][sy]});
         setTimeout(() => {
             this.switchCellData( second.x, second.y, first.x, first.y,true);
         }, 500)
@@ -507,7 +493,6 @@ export class GridStore {
 
     @action.bound
     remove(x: number, y: number) {
-        //console.log('remove ' + x + ':' + y);
         this.grid[x][y] = null;
         for (let i: number = y; i < 7; i++) {
             this.grid[x][i] = {...this.grid[x][i + 1], y: i, top: (7 - i) * 66, zIndex: 7 - i};
