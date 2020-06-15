@@ -506,7 +506,7 @@ export class GridStore {
     }
 
     @action.bound
-    remove = (x: number, y: number) => {
+    remove(x: number, y: number) {
         //console.log('remove ' + x + ':' + y);
         this.grid[x][y] = null;
         for (let i: number = y; i < 7; i++) {
