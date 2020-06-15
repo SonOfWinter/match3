@@ -45,8 +45,6 @@ type RoundCellProps = {
 
 export default function RoundCell(props: RoundCellProps) {
     const {backgroundColor, color, selected, x, y, top, left, zIndex, canBeSelected, icon } = props;
-
-
     const classes = useStyles();
     const gridStore = useContext(GridStore);
     const {select, selectedCell, info} = gridStore
@@ -67,6 +65,7 @@ export default function RoundCell(props: RoundCellProps) {
                 }
             }}
         >
+            { x + ':' + y}
             {iconComponent}
         </motion.div>
     );

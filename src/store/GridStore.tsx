@@ -86,7 +86,7 @@ export interface CellPart {
     icon: object;
 }
 
-export interface Cell extends CellPart{
+export interface Cell extends CellPart {
     id: string;
     x: number;
     y: number;
@@ -207,12 +207,88 @@ export class GridStore {
         }
     }
 
+    @computed
+    get info() {
+        return {
+            grid: this.grid,
+            selectedCell: this.selectedCell,
+            canMove: this.canMove
+        };
+    }
+
+    @action
+    select = (x: number, y: number) => {
+        let isSelected: boolean = this.grid[x][y].selected;
+        if (this.selectedCell === null || isSelected) {
+            const selectedCell = {...this.grid[x][y], selected: !isSelected};
+            this.grid[x][y] = selectedCell;
+            if (!isSelected) {
+                this.selectedCell = selectedCell;
+            } else {
+                this.selectedCell = null;
+            }
+            if (x - 1 >= 0) {
+                this.grid[x - 1][y] = {...this.grid[x - 1][y], canBeSelected: !isSelected};
+            }
+            if (x + 1 <= 7) {
+                this.grid[x + 1][y] = {...this.grid[x + 1][y], canBeSelected: !isSelected};
+            }
+            if (y - 1 >= 0) {
+                this.grid[x][y - 1] = {...this.grid[x][y - 1], canBeSelected: !isSelected};
+            }
+            if (y + 1 <= 7) {
+                this.grid[x][y + 1] = {...this.grid[x][y + 1], canBeSelected: !isSelected};
+            }
+        } else {
+            let isCanBeSelected: boolean = this.grid[x][y].canBeSelected;
+            if (isCanBeSelected) {
+                this.canMove = false;
+                let first = {...this.selectedCell, selected: false};
+                let second = {...this.grid[x][y]};
+                if (first.x - 1 >= 0) {
+                    this.grid[first.x - 1][first.y] = {
+                        ...this.grid[first.x - 1][first.y],
+                        canBeSelected: false
+                    };
+                }
+                if (first.x + 1 <= 7) {
+                    this.grid[first.x + 1][first.y] = {
+                        ...this.grid[first.x + 1][first.y],
+                        canBeSelected: false
+                    };
+                }
+                if (first.y - 1 >= 0) {
+                    this.grid[first.x][first.y - 1] = {
+                        ...this.grid[first.x][first.y - 1],
+                        canBeSelected: false
+                    };
+                }
+                if (first.y + 1 <= 7) {
+                    this.grid[first.x][first.y + 1] = {
+                        ...this.grid[first.x][first.y + 1],
+                        canBeSelected: false
+                    };
+                }
+
+                this.selectedCell = null;
+                setTimeout(() => {
+                        this.invertCellData(first.x, first.y, second.x, second.y)
+                    }, 50
+                );
+                setTimeout(() => {
+                    this.switchCellData(first.x, first.y, second.x, second.y);
+                }, 500)
+            }
+
+        }
+    }
+
     @action.bound
     getMatch(): SimpleCell[] {
-        let cellsToRemove:SimpleCell[] = [];
+        let cellsToRemove: SimpleCell[] = [];
         let currentColor: string = '';
         let currentSuite: number = 0;
-        let elemInList:any;
+        let elemInList: any;
         for (let x: number = 0; x < squareSize; x++) {
             for (let y: number = 0; y < squareSize; y++) {
                 if (y === 0) {
@@ -227,13 +303,13 @@ export class GridStore {
                     }
                 }
                 if (currentSuite === 2) {
-                    elemInList = cellsToRemove.find(elem => elem.x === x && elem.y === y-2);
+                    elemInList = cellsToRemove.find(elem => elem.x === x && elem.y === y - 2);
                     if (elemInList === undefined) {
-                        cellsToRemove.push({x, y: y-2});
+                        cellsToRemove.push({x, y: y - 2});
                     }
-                    elemInList = cellsToRemove.find(elem => elem.x === x && elem.y === y-1);
+                    elemInList = cellsToRemove.find(elem => elem.x === x && elem.y === y - 1);
                     if (elemInList === undefined) {
-                        cellsToRemove.push({x, y: y-1});
+                        cellsToRemove.push({x, y: y - 1});
                     }
                     elemInList = cellsToRemove.find(elem => elem.x === x && elem.y === y);
                     if (elemInList === undefined) {
@@ -262,13 +338,13 @@ export class GridStore {
                     }
                 }
                 if (currentSuite === 2) {
-                    elemInList = cellsToRemove.find(elem => elem.x === x-2 && elem.y === y);
+                    elemInList = cellsToRemove.find(elem => elem.x === x - 2 && elem.y === y);
                     if (elemInList === undefined) {
-                        cellsToRemove.push({x: x-2, y});
+                        cellsToRemove.push({x: x - 2, y});
                     }
-                    elemInList = cellsToRemove.find(elem => elem.x === x-1 && elem.y === y);
+                    elemInList = cellsToRemove.find(elem => elem.x === x - 1 && elem.y === y);
                     if (elemInList === undefined) {
-                        cellsToRemove.push({x: x-1, y});
+                        cellsToRemove.push({x: x - 1, y});
                     }
                     elemInList = cellsToRemove.find(elem => elem.x === x && elem.y === y);
                     if (elemInList === undefined) {
@@ -326,9 +402,8 @@ export class GridStore {
     }
 
     @action.bound
-    fillGrid(matches: SimpleCell[])
-    {
-        for(let x:number = 0; x < squareSize; x++) {
+    fillGrid(matches: SimpleCell[]) {
+        for (let x: number = 0; x < squareSize; x++) {
             let newY: number = 7;
             const yMatches = matches.filter(m => m.x === x);
             yMatches.forEach(m => {
@@ -362,133 +437,49 @@ export class GridStore {
             left: sx * 66,
             zIndex: 7 - sy
         };
-        let matches = this.getMatch();
-        if (matches.length === 0 && !isRevert) {
-            this.revert(fx, fy, sx, sy);
-        } else if (!isRevert && matches.length > 0) {
-            this.removeMatches(matches);
+        if (!isRevert) {
+            let matches = this.getMatch();
+            if (matches.length === 0) {
+                setTimeout(() => {
+                    this.invertCellData(fx, fy, sx, sy);
+                }, 50)
+                setTimeout(() => {
+                    this.switchCellData(fx, fy, sx, sy, true);
+                }, 500)
+            } else if (matches.length > 0) {
+                this.removeMatches(matches);
+            } else {
+                this.canMove = true;
+            }
         } else {
             this.canMove = true;
         }
     }
 
     @action.bound
-    revert(fx: number, fy: number, sx: number, sy: number) {
+    invertCellData(fx: number, fy: number, sx: number, sy: number) {
         let first = {...this.grid[fx][fy]};
         let second = {...this.grid[sx][sy]};
         this.grid[fx][fy] = {
             ...first,
+            selected: false,
+            canBeSelected: false,
             x: sx,
             y: sy,
             top: (7 - sy) * 66,
-            left: sx  * 66,
+            left: sx * 66,
             zIndex: 7 - sy
         };
         this.grid[sx][sy] = {
             ...second,
+            selected: false,
+            canBeSelected: false,
             x: fx,
             y: fy,
             top: (7 - fy) * 66,
-            left: fx  * 66,
+            left: fx * 66,
             zIndex: 7 - fy
         };
-        setTimeout(() => {
-            this.switchCellData( second.x, second.y, first.x, first.y,true);
-        }, 500)
-    }
-
-    @computed
-    get info() {
-        return {
-            grid: this.grid,
-            selectedCell: this.selectedCell,
-            canMove: this.canMove
-        };
-    }
-
-    @action
-    select = (x: number, y: number) => {
-        let isSelected: boolean = this.grid[x][y].selected;
-        if (this.selectedCell === null || isSelected) {
-            const selectedCell = {...this.grid[x][y], selected: !isSelected};
-            this.grid[x][y] = selectedCell;
-            if (!isSelected) {
-                this.selectedCell = selectedCell;
-            } else {
-                this.selectedCell = null;
-            }
-            if (x - 1 >= 0) {
-                this.grid[x - 1][y] = {...this.grid[x - 1][y], canBeSelected: !isSelected};
-            }
-            if (x + 1 <= 7) {
-                this.grid[x + 1][y] = {...this.grid[x + 1][y], canBeSelected: !isSelected};
-            }
-            if (y - 1 >= 0) {
-                this.grid[x][y - 1] = {...this.grid[x][y - 1], canBeSelected: !isSelected};
-            }
-            if (y + 1 <= 7) {
-                this.grid[x][y + 1] = {...this.grid[x][y + 1], canBeSelected: !isSelected};
-            }
-        } else {
-            let isCanBeSelected: boolean = this.grid[x][y].canBeSelected;
-            if (isCanBeSelected) {
-                this.canMove = false;
-                let first = {...this.selectedCell, selected: false};
-                let second = {...this.grid[x][y]};
-
-                if (first.x - 1 >= 0) {
-                    this.grid[first.x - 1][first.y] = {
-                        ...this.grid[first.x - 1][first.y],
-                        canBeSelected: false
-                    };
-                }
-                if (first.x + 1 <= 7) {
-                    this.grid[first.x + 1][first.y] = {
-                        ...this.grid[first.x + 1][first.y],
-                        canBeSelected: false
-                    };
-                }
-                if (first.y - 1 >= 0) {
-                    this.grid[first.x][first.y - 1] = {
-                        ...this.grid[first.x][first.y - 1],
-                        canBeSelected: false
-                    };
-                }
-                if (first.y + 1 <= 7) {
-                    this.grid[first.x][first.y + 1] = {
-                        ...this.grid[first.x][first.y + 1],
-                        canBeSelected: false
-                    };
-                }
-
-                this.selectedCell = null;
-
-                this.grid[first.x][first.y] = {
-                    ...first,
-                    selected: false,
-                    canBeSelected: false,
-                    x: second.x,
-                    y: second.y,
-                    top: second.top,
-                    left: second.left,
-                    zIndex: 7 - second.y
-                };
-                this.grid[second.x][second.y] = {
-                    ...second,
-                    selected: false,
-                    canBeSelected: false,
-                    x: first.x,
-                    y: first.y,
-                    top: first.top,
-                    left: first.left,
-                    zIndex: 7 - first.y
-                };
-                setTimeout(() => {
-                    this.switchCellData(first.x, first.y, second.x, second.y);
-                }, 500)
-            }
-
-        }
     }
 
     @action.bound
