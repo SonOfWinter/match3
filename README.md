@@ -16,3 +16,4 @@ Le but étant de faire un jeu type match-3.
 - react
 - react-dom
 - typescript
+- framer-motion
