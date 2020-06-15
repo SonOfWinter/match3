@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import {makeStyles} from "@material-ui/core";
 import GridStore from "../store/GridStore";
+import { motion } from "framer-motion";
 
 const size = '62px';
 const margin = '2px';
@@ -44,22 +45,29 @@ type RoundCellProps = {
 
 export default function RoundCell(props: RoundCellProps) {
     const {backgroundColor, color, selected, x, y, top, left, zIndex, canBeSelected, icon } = props;
+
+
     const classes = useStyles();
     const gridStore = useContext(GridStore);
     const {select, selectedCell, info} = gridStore
     const otherClass = canBeSelected ? classes.cellCanBeSelected : selected ? classes.cellSelected : '';
-    const iconComponent = React.createElement(icon, {style: {color: color, width: '50%', height: '50%', margin: '25%'}});
+    const iconComponent = React.createElement(icon, {style: {color, width: '50%', height: '50%', margin: '25%'}});
+    const canBeClick:boolean = info.canMove && (selectedCell === null || selected || canBeSelected);
+
     return (
-        <div
+        <motion.div
+            animate={{ scale: (selected ? 1.1 : 1) , opacity: (selected ? 0.8 : 1)}}
+            whileHover={{ scale: (canBeClick ? 1.1 : 1), opacity: (canBeClick ? 0.8 : 1) }}
+            whileTap={{ scale: 0.8 }}
             className={`${classes.cell} ${otherClass}`}
             style={{'backgroundColor': backgroundColor, top: top + 'px', left: left + 'px', zIndex: zIndex}}
             onClick={() => {
-                if (info.canMove && (selectedCell === null || selected || canBeSelected)) {
+                if (canBeClick) {
                     select(x, y);
                 }
             }}
         >
             {iconComponent}
-        </div>
+        </motion.div>
     );
 }
