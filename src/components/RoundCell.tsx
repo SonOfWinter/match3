@@ -65,7 +65,6 @@ export default function RoundCell(props: RoundCellProps) {
                 }
             }}
         >
-            { x + ':' + y}
             {iconComponent}
         </motion.div>
     );
