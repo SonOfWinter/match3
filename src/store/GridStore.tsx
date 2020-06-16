@@ -74,6 +74,17 @@ interface SimpleCell {
     y: number;
 }
 
+export interface Match {
+    color: string;
+    suite: number;
+    isCombo: boolean;
+}
+
+interface MatchResult {
+    cellsToRemove: SimpleCell[]
+    matches: Match[]
+}
+
 interface ForInitGrid {
     x: ColorStat[];
     y: ColorStat[];
@@ -85,6 +96,7 @@ export interface CellPart {
     color: string;
     icon: object;
 }
+
 
 export interface Cell extends CellPart {
     id: string;
@@ -245,6 +257,7 @@ export default class GridStore {
         } else {
             let isCanBeSelected: boolean = this.grid[x][y].canBeSelected;
             if (isCanBeSelected) {
+                this.messageStore.add('Move');
                 this.canMove = false;
                 let first = {...this.selectedCell, selected: false};
                 let second = {...this.grid[x][y]};
@@ -287,8 +300,17 @@ export default class GridStore {
     }
 
     @action.bound
-    getMatch(isCombo: boolean = false): SimpleCell[] {
+    countMatch(suite: number, color: string, isCombo: boolean) {
+        const message = 'Match-' + (suite+1) + " " + color + (isCombo ? ' COMBO' : '');
+        setTimeout(() => {
+            this.messageStore.add(message);
+        }, 300);
+    }
+
+    @action.bound
+    getMatch(isCombo: boolean = false): MatchResult {
         let cellsToRemove: SimpleCell[] = [];
+        let matches: Match[] = [];
         let currentColor: string = '';
         let currentSuite: number = 0;
         let elemInList: any;
@@ -302,7 +324,7 @@ export default class GridStore {
                         currentSuite++;
                     } else {
                         if (currentSuite >= 2) {
-                            this.messageStore.add('Match-' + (currentSuite+1) + " " + currentColor + (isCombo ? ' COMBO' : ''));
+                            matches.push({suite: currentSuite, color: currentColor, isCombo});
                         }
                         currentColor = this.grid[x][y].name;
                         currentSuite = 0;
@@ -342,7 +364,7 @@ export default class GridStore {
                         currentSuite++;
                     } else {
                         if (currentSuite >= 2) {
-                            this.messageStore.add('Match-' + (currentSuite+1) + " " + currentColor + (isCombo ? ' COMBO' : ''));
+                            matches.push({suite: currentSuite, color: currentColor, isCombo});
                         }
                         currentColor = this.grid[x][y].name;
                         currentSuite = 0;
@@ -369,7 +391,7 @@ export default class GridStore {
                 }
             }
         }
-        return cellsToRemove.sort((a, b) => {
+        const returnedCellsToRemove:SimpleCell[] =  cellsToRemove.sort((a, b) => {
             if (a.y > b.y) {
                 return -1;
             } else if (a.y < b.y) {
@@ -379,6 +401,10 @@ export default class GridStore {
             }
             return 0;
         });
+        return {
+            cellsToRemove: returnedCellsToRemove,
+            matches
+        };
     }
 
 
@@ -402,10 +428,15 @@ export default class GridStore {
         setTimeout(() => {
             this.moveNewCells();
         }, 100);
-        const newMatches = this.getMatch(true);
-        if (newMatches.length > 0) {
+        const newMatches:MatchResult = this.getMatch(true);
+        if (newMatches.cellsToRemove.length > 0) {
+            newMatches.matches.forEach(m => {
+                setTimeout(() => {
+                    this.countMatch(m.suite, m.color, m.isCombo);
+                }, 50)
+            });
             setTimeout(() => {
-                this.removeMatches(newMatches);
+                this.removeMatches(newMatches.cellsToRemove);
             }, 600);
         } else {
             this.canMove = true;
@@ -449,16 +480,21 @@ export default class GridStore {
             zIndex: 7 - sy
         };
         if (!isRevert) {
-            let matches = this.getMatch();
-            if (matches.length === 0) {
+            let matches:MatchResult = this.getMatch();
+            if (matches.cellsToRemove.length === 0) {
                 setTimeout(() => {
                     this.invertCellData(fx, fy, sx, sy);
                 }, 50)
                 setTimeout(() => {
                     this.switchCellData(fx, fy, sx, sy, true);
                 }, 500)
-            } else if (matches.length > 0) {
-                this.removeMatches(matches);
+            } else if (matches.cellsToRemove.length > 0) {
+                matches.matches.forEach(m => {
+                    setTimeout(() => {
+                        this.countMatch(m.suite, m.color, m.isCombo);
+                    }, 50)
+                })
+                this.removeMatches(matches.cellsToRemove);
             } else {
                 this.canMove = true;
             }
