@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import {makeStyles} from "@material-ui/core";
-import GridStore from "../store/GridStore";
+import RootStore from "../store/RootStore";
 import { motion } from "framer-motion";
 
 const size = '62px';
@@ -46,8 +46,8 @@ type RoundCellProps = {
 export default function RoundCell(props: RoundCellProps) {
     const {backgroundColor, color, selected, x, y, top, left, zIndex, canBeSelected, icon } = props;
     const classes = useStyles();
-    const gridStore = useContext(GridStore);
-    const {select, selectedCell, info} = gridStore
+    const rootStore = useContext(RootStore);
+    const {select, selectedCell, info} = rootStore.gridStore
     const otherClass = canBeSelected ? classes.cellCanBeSelected : selected ? classes.cellSelected : '';
     const iconComponent = React.createElement(icon, {style: {color, width: '50%', height: '50%', margin: '25%'}});
     const canBeClick:boolean = info.canMove && (selectedCell === null || selected || canBeSelected);

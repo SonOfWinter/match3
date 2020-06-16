@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Nav from "./components/Nav";
 import GameGrid from "./components/GameGrid";
 import SideCard from "./components/SideCard";
+import LogSideCard from "./components/LogSideCard";
 import {makeStyles} from "@material-ui/core";
 
 const useStyles = makeStyles({
@@ -26,7 +27,7 @@ function App() {
                     <Grid container spacing={2}>
                         <SideCard />
                         <GameGrid />
-                        <SideCard />
+                        <LogSideCard />
                     </Grid>
                 </Container>
             </main>

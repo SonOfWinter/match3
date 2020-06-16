@@ -1,4 +1,3 @@
-import {createContext} from "react";
 import {action, computed, observable} from "mobx"
 import blue from '@material-ui/core/colors/blue';
 import red from '@material-ui/core/colors/red';
@@ -15,6 +14,7 @@ import WhatshotIcon from '@material-ui/icons/Whatshot';
 import InvertColorsIcon from '@material-ui/icons/InvertColors';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import ExtensionIcon from '@material-ui/icons/Extension';
+import MessageStore from "./MessageStore";
 
 export const blueCell = {
     name: 'blue',
@@ -97,9 +97,11 @@ export interface Cell extends CellPart {
     left: number;
 }
 
-export class GridStore {
+export default class GridStore {
+    private messageStore: MessageStore;
 
-    constructor() {
+    constructor(messageStore: MessageStore) {
+        this.messageStore = messageStore;
         this.init();
     }
 
@@ -205,6 +207,7 @@ export class GridStore {
                 this.grid[x].push(cell)
             }
         }
+        this.messageStore.add('init grid');
     }
 
     @computed
@@ -284,7 +287,7 @@ export class GridStore {
     }
 
     @action.bound
-    getMatch(): SimpleCell[] {
+    getMatch(isCombo: boolean = false): SimpleCell[] {
         let cellsToRemove: SimpleCell[] = [];
         let currentColor: string = '';
         let currentSuite: number = 0;
@@ -298,6 +301,9 @@ export class GridStore {
                     if (this.grid[x][y].name === currentColor) {
                         currentSuite++;
                     } else {
+                        if (currentSuite >= 2) {
+                            this.messageStore.add('Match-' + (currentSuite+1) + " " + currentColor + (isCombo ? ' COMBO' : ''));
+                        }
                         currentColor = this.grid[x][y].name;
                         currentSuite = 0;
                     }
@@ -324,6 +330,8 @@ export class GridStore {
 
             }
         }
+        currentColor = '';
+        currentSuite = 0;
         for (let y: number = 0; y < squareSize; y++) {
             for (let x: number = 0; x < squareSize; x++) {
                 if (x === 0) {
@@ -333,6 +341,9 @@ export class GridStore {
                     if (this.grid[x][y].name === currentColor) {
                         currentSuite++;
                     } else {
+                        if (currentSuite >= 2) {
+                            this.messageStore.add('Match-' + (currentSuite+1) + " " + currentColor + (isCombo ? ' COMBO' : ''));
+                        }
                         currentColor = this.grid[x][y].name;
                         currentSuite = 0;
                     }
@@ -391,7 +402,7 @@ export class GridStore {
         setTimeout(() => {
             this.moveNewCells();
         }, 100);
-        const newMatches = this.getMatch();
+        const newMatches = this.getMatch(true);
         if (newMatches.length > 0) {
             setTimeout(() => {
                 this.removeMatches(newMatches);
@@ -490,5 +501,3 @@ export class GridStore {
         }
     }
 }
-
-export default createContext(new GridStore());

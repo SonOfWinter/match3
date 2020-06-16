@@ -3,7 +3,7 @@ import {observer} from "mobx-react";
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import {makeStyles} from '@material-ui/core';
-import GridStore from "../store/GridStore";
+import RootStore from "../store/RootStore";
 import RoundCell from "./RoundCell";
 
 const useStyles = makeStyles({
@@ -25,10 +25,10 @@ const useStyles = makeStyles({
 
 
 export const GameGrid = () => {
-    const gridStore = useContext(GridStore);
+    const rootStore = useContext(RootStore);
 
     const classes = useStyles();
-    const {info} = gridStore;
+    const {info} = rootStore.gridStore;
     return (
         <Grid item xs={12} lg={6}>
             <Paper className={classes.paper}>
