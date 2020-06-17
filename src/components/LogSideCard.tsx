@@ -10,13 +10,18 @@ import {GameGrid} from "./GameGrid";
 
 const useStyles = makeStyles({
     card: {
-        height: '100%'
+        height: '548px',
+        overflow: 'hidden'
+    },
+    logs: {
+        overflowY: 'scroll',
+        height: 'auto',
+        maxHeight: '495px'
     }
 });
 
 export const LogSideCard = () => {
     const rootStore = useContext(RootStore);
-
     const {info} = rootStore.messageStore;
     const classes = useStyles();
     return (
@@ -26,11 +31,13 @@ export const LogSideCard = () => {
                     <Typography variant={"h5"} component={"h2"}>
                         Log
                     </Typography>
+                    <div className={classes.logs}>
                     {info.messages.map((m) =>
-                        <Typography variant={"body1"} key={m}>
+                        <Typography variant={"body1"} key={m + Math.random()}>
                             {m}
                         </Typography>
                     )}
+                    </div>
                 </CardContent>
             </Card>
         </Grid>

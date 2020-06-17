@@ -16,6 +16,8 @@ export default class MessageStore {
 
     @action
     add = (message: string) => {
-        this.messages.push(message);
+        let now = new Date();
+
+        this.messages.push(now.getHours() + ':' +now.getMinutes() + ':' +now.getSeconds() + ' : ' + message);
     }
 }
