@@ -1,6 +1,7 @@
 import {action, computed, observable} from "mobx"
 import Cell, {CellInfo} from '../domain/Cell';
 import {RootStore} from "./RootStore";
+import Match from "../domain/Match";
 
 const squareSize = 8;
 
@@ -18,11 +19,6 @@ interface SimpleCell {
     y: number;
 }
 
-export interface Match {
-    color: string;
-    suite: number;
-    isCombo: boolean;
-}
 
 interface MatchResult {
     cellsToRemove: SimpleCell[]
@@ -123,6 +119,7 @@ export default class GridStore {
             canMove: this.canMove
         };
     }
+
     @computed
     get flatGrid():Cell[] {
         return this.grid.flat();
@@ -197,19 +194,18 @@ export default class GridStore {
     }
 
     @action.bound
-    countMatch(suite: number, color: string, isCombo: boolean) {
-        const message = 'Match-' + (suite + 1) + " " + color + (isCombo ? ' COMBO' : '');
+    countMatch(match: Match) {
         setTimeout(() => {
-            this.rootStore.messageStore.add(message);
+            this.rootStore.messageStore.addMatch(match);
         }, 300);
-        this.rootStore.statStore.addColor(color, suite + 1);
-        if (suite === 2) {
+        this.rootStore.statStore.addColor(match.color, match.suite + 1);
+        if (match.suite === 2) {
             this.rootStore.statStore.addMatch3();
         }
-        if (suite === 3) {
+        if (match.suite === 3) {
             this.rootStore.statStore.addMatch4();
         }
-        if (suite === 4) {
+        if (match.suite === 4) {
             this.rootStore.statStore.addMatch5();
         }
     }
@@ -231,7 +227,7 @@ export default class GridStore {
                         currentSuite++;
                     } else {
                         if (currentSuite >= 2) {
-                            matches.push({suite: currentSuite, color: currentColor, isCombo});
+                            matches.push(new Match(currentColor, currentSuite, isCombo));
                         }
                         currentColor = newGrid[x][y].name;
                         currentSuite = 0;
@@ -271,7 +267,7 @@ export default class GridStore {
                         currentSuite++;
                     } else {
                         if (currentSuite >= 2) {
-                            matches.push({suite: currentSuite, color: currentColor, isCombo});
+                            matches.push(new Match(currentColor, currentSuite, isCombo));
                         }
                         currentColor = newGrid[x][y].name;
                         currentSuite = 0;
@@ -346,7 +342,7 @@ export default class GridStore {
         if (newMatches.cellsToRemove.length > 0) {
             newMatches.matches.forEach(m => {
                 setTimeout(() => {
-                    this.countMatch(m.suite, m.color, m.isCombo);
+                    this.countMatch(m);
                 }, 50)
             });
             setTimeout(() => {
@@ -405,7 +401,7 @@ export default class GridStore {
             } else if (matches.cellsToRemove.length > 0) {
                 matches.matches.forEach(m => {
                     setTimeout(() => {
-                        this.countMatch(m.suite, m.color, m.isCombo);
+                        this.countMatch(m);
                     }, 50)
                 })
                 this.removeMatches(matches.cellsToRemove);
