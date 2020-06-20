@@ -1,23 +1,28 @@
-import {action, computed, observable} from "mobx";
+import {action, computed, observable, reaction} from "mobx";
+import Message from "../domain/Message";
+import {RootStore} from "./RootStore";
 
 export default class MessageStore {
 
-    constructor() {
+    @observable messages: Message[] = [];
+    private rootStore: RootStore;
+
+    constructor(rootStore: RootStore) {
+        this.rootStore = rootStore;
     }
 
-    @observable messages: string[] = [];
-
     @computed
-    get info() {
-        return {
-            messages: this.messages
-        };
+    get allMessages() {
+        return this.messages.slice().reverse();
     }
 
     @action
     add = (message: string) => {
-        let now = new Date();
-
-        this.messages.push(now.getHours() + ':' +now.getMinutes() + ':' +now.getSeconds() + ' : ' + message);
+        this.messages.push(new Message(message));
     }
+
+    reactionToNewMessage = reaction(
+        () => this.messages.length,
+        length => console.log("New message :", this.messages[length-1].message)
+    )
 }

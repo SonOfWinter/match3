@@ -28,16 +28,16 @@ export const GameGrid = () => {
     const rootStore = useContext(RootStore);
 
     const classes = useStyles();
-    const {info} = rootStore.gridStore;
+    const {flatGrid} = rootStore.gridStore;
     return (
         <Grid item xs={12} lg={6}>
             <Paper className={classes.paper}>
                 <div className={classes.container}>
-                    {info.grid.flat().map(cellInfo => {
+                    {flatGrid.map(cellInfo => {
                     return (<RoundCell
                         key={cellInfo.id}
-                        backgroundColor={cellInfo.backgroundColor || 'white'}
-                        color={cellInfo.color || 'black'}
+                        backgroundColor={cellInfo.backgroundColor}
+                        color={cellInfo.color}
                         selected={cellInfo.selected || false}
                         canBeSelected={cellInfo.canBeSelected || false}
                         x={cellInfo.x}

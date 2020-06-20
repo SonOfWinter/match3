@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import {makeStyles} from "@material-ui/core";
 import RootStore from "../store/RootStore";
 import {observer} from "mobx-react";
-import {GameGrid} from "./GameGrid";
+import Message from "../domain/Message";
 
 const useStyles = makeStyles({
     card: {
@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 
 export const LogSideCard = () => {
     const rootStore = useContext(RootStore);
-    const {info} = rootStore.messageStore;
+    const {allMessages} = rootStore.messageStore;
     const classes = useStyles();
     return (
         <Grid item xs={12} lg={3}>
@@ -32,9 +32,9 @@ export const LogSideCard = () => {
                         Log
                     </Typography>
                     <div className={classes.logs}>
-                    {info.messages.map((m) =>
-                        <Typography variant={"body1"} key={m + Math.random()}>
-                            {m}
+                    {allMessages.map((m:Message) =>
+                        <Typography variant={"body1"} key={m.id}>
+                            {m.toString()}
                         </Typography>
                     )}
                     </div>

@@ -40,7 +40,7 @@ type RoundCellProps = {
     top: number,
     left: number,
     zIndex: number,
-    icon: string
+    icon: any
 }
 
 export default function RoundCell(props: RoundCellProps) {

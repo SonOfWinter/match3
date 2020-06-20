@@ -1,9 +1,7 @@
 import {action, computed, observable} from "mobx";
+import {RootStore} from "./RootStore";
 
 export default class StatStore {
-
-    constructor() {
-    }
 
     @observable blue: number = 0;
     @observable red: number = 0;
@@ -21,6 +19,11 @@ export default class StatStore {
     @observable match3: number = 0;
     @observable match4: number = 0;
     @observable match5: number = 0;
+    private rootStore: RootStore;
+
+    constructor(rootStore: RootStore) {
+        this.rootStore = rootStore;
+    }
 
 
     @computed
