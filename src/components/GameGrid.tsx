@@ -34,19 +34,23 @@ export const GameGrid = () => {
             <Paper className={classes.paper}>
                 <div className={classes.container}>
                     {flatGrid.map(cellInfo => {
-                    return (<RoundCell
-                        key={cellInfo.id}
-                        backgroundColor={cellInfo.backgroundColor}
-                        color={cellInfo.color}
-                        selected={cellInfo.selected || false}
-                        canBeSelected={cellInfo.canBeSelected || false}
-                        x={cellInfo.x}
-                        y={cellInfo.y}
-                        top={cellInfo.top}
-                        left={cellInfo.left}
-                        zIndex={cellInfo.zIndex}
-                        icon={cellInfo.icon}
-                    />);
+                        if (cellInfo !== null) {
+                            return (<RoundCell
+                                key={cellInfo.id}
+                                backgroundColor={cellInfo.backgroundColor}
+                                color={cellInfo.color}
+                                selected={cellInfo.selected || false}
+                                canBeSelected={cellInfo.canBeSelected || false}
+                                x={cellInfo.x}
+                                y={cellInfo.y}
+                                top={cellInfo.top}
+                                left={cellInfo.left}
+                                zIndex={cellInfo.zIndex}
+                                icon={cellInfo.icon}
+                            />);
+                        } else {
+                            return '';
+                        }
                 })}
                 </div>
             </Paper>

@@ -108,6 +108,22 @@ export default class Cell implements CellInfo {
         }
     }
 
+    copy(cell:Cell):Cell {
+        this.id = cell.id;
+        this.x = cell.x;
+        this.y = cell.y;
+        this.selected = cell.selected;
+        this.canBeSelected = cell.canBeSelected;
+        this.top = cell.top;
+        this.left = cell.left;
+        this.zIndex = cell.zIndex;
+        this.name = cell.name;
+        this.backgroundColor = cell.backgroundColor;
+        this.color = cell.color;
+        this.icon = cell.icon;
+        return this;
+    }
+
     setColor(color: string) {
         let data = null;
         switch (color) {

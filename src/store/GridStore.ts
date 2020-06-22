@@ -1,4 +1,4 @@
-import {action, computed, observable} from "mobx"
+import {action, computed, observable, reaction} from "mobx"
 import Cell, {CellInfo} from '../domain/Cell';
 import {RootStore} from "./RootStore";
 import Match from "../domain/Match";
@@ -42,8 +42,31 @@ export default class GridStore {
     @observable grid: any[] = [];
     @observable selectedCell: CellInfo | null = null;
     @observable canMove: boolean = true;
+    @observable matches: Match[] = [];
+    @observable oldMatches: Match[] = [];
 
     forInitGridStat: ForInitGrid = {x: [], y: []};
+
+    reactionToNewMatch = reaction(
+        () => this.matches,
+        (newMatches: Match[]) => {
+            const matches = newMatches.filter(x => !this.oldMatches.includes(x));
+            matches.forEach(match => {
+                this.rootStore.messageStore.addMatch(match);
+                if (match.suite === 2) {
+                    this.rootStore.statStore.addMatch3();
+                }
+                if (match.suite === 3) {
+                    this.rootStore.statStore.addMatch4();
+                }
+                if (match.suite === 4) {
+                    this.rootStore.statStore.addMatch5();
+                }
+                this.rootStore.statStore.addColor(match.color, match.suite+1);
+            });
+            this.oldMatches = [...newMatches];
+        }
+    );
 
     getNextColor(x: number, y: number, forInit: boolean, count: number = 0): Cell {
         const number = Math.random() * 100;
@@ -107,7 +130,6 @@ export default class GridStore {
                 this.grid[x].push(cell)
             }
         }
-        this.rootStore.messageStore.add('init grid');
     }
 
     @computed
@@ -121,7 +143,7 @@ export default class GridStore {
     }
 
     @computed
-    get flatGrid():Cell[] {
+    get flatGrid(): Cell[] {
         return this.grid.flat();
     }
 
@@ -129,55 +151,41 @@ export default class GridStore {
     select = (x: number, y: number) => {
         let isSelected: boolean = this.grid[x][y].selected;
         if (this.selectedCell === null || isSelected) {
-            const selectedCell = {...this.grid[x][y], selected: !isSelected};
-            this.grid[x][y] = selectedCell;
+            this.grid[x][y].selected = !isSelected;
             if (!isSelected) {
-                this.selectedCell = selectedCell;
+                this.selectedCell = {...this.grid[x][y]};
             } else {
                 this.selectedCell = null;
             }
             if (x - 1 >= 0) {
-                this.grid[x - 1][y] = {...this.grid[x - 1][y], canBeSelected: !isSelected};
+                this.grid[x - 1][y].canBeSelected = !isSelected;
             }
             if (x + 1 <= 7) {
-                this.grid[x + 1][y] = {...this.grid[x + 1][y], canBeSelected: !isSelected};
+                this.grid[x + 1][y].canBeSelected = !isSelected;
             }
             if (y - 1 >= 0) {
-                this.grid[x][y - 1] = {...this.grid[x][y - 1], canBeSelected: !isSelected};
+                this.grid[x][y - 1].canBeSelected = !isSelected;
             }
             if (y + 1 <= 7) {
-                this.grid[x][y + 1] = {...this.grid[x][y + 1], canBeSelected: !isSelected};
+                this.grid[x][y + 1].canBeSelected = !isSelected;
             }
         } else {
             let isCanBeSelected: boolean = this.grid[x][y].canBeSelected;
             if (isCanBeSelected) {
-                this.rootStore.messageStore.add('Move');
                 this.canMove = false;
                 let first = {...this.selectedCell, selected: false};
                 let second = {...this.grid[x][y]};
                 if (first.x - 1 >= 0) {
-                    this.grid[first.x - 1][first.y] = {
-                        ...this.grid[first.x - 1][first.y],
-                        canBeSelected: false
-                    };
+                    this.grid[first.x - 1][first.y].canBeSelected = false;
                 }
                 if (first.x + 1 <= 7) {
-                    this.grid[first.x + 1][first.y] = {
-                        ...this.grid[first.x + 1][first.y],
-                        canBeSelected: false
-                    };
+                    this.grid[first.x + 1][first.y].canBeSelected = false;
                 }
                 if (first.y - 1 >= 0) {
-                    this.grid[first.x][first.y - 1] = {
-                        ...this.grid[first.x][first.y - 1],
-                        canBeSelected: false
-                    };
+                    this.grid[first.x][first.y - 1].canBeSelected = false;
                 }
                 if (first.y + 1 <= 7) {
-                    this.grid[first.x][first.y + 1] = {
-                        ...this.grid[first.x][first.y + 1],
-                        canBeSelected: false
-                    };
+                    this.grid[first.x][first.y + 1].canBeSelected = false;
                 }
 
                 this.selectedCell = null;
@@ -195,19 +203,7 @@ export default class GridStore {
 
     @action.bound
     countMatch(match: Match) {
-        setTimeout(() => {
-            this.rootStore.messageStore.addMatch(match);
-        }, 300);
-        this.rootStore.statStore.addColor(match.color, match.suite + 1);
-        if (match.suite === 2) {
-            this.rootStore.statStore.addMatch3();
-        }
-        if (match.suite === 3) {
-            this.rootStore.statStore.addMatch4();
-        }
-        if (match.suite === 4) {
-            this.rootStore.statStore.addMatch5();
-        }
+        this.matches.push(match);
     }
 
     getGridMatch(grid: any[], isCombo: boolean): MatchResult {
@@ -252,7 +248,9 @@ export default class GridStore {
                         cellsToRemove.push({x, y});
                     }
                 }
-
+                if (y >= squareSize - 1 && currentSuite >= 2) {
+                    matches.push(new Match(currentColor, currentSuite, isCombo));
+                }
             }
         }
         currentColor = '';
@@ -265,7 +263,8 @@ export default class GridStore {
                 } else {
                     if (newGrid[x][y].name === currentColor) {
                         currentSuite++;
-                    } else {
+                    }
+                    if (newGrid[x][y].name !== currentColor) {
                         if (currentSuite >= 2) {
                             matches.push(new Match(currentColor, currentSuite, isCombo));
                         }
@@ -291,6 +290,9 @@ export default class GridStore {
                     if (elemInList === undefined) {
                         cellsToRemove.push({x, y});
                     }
+                }
+                if (x >= squareSize - 1 && currentSuite >= 2) {
+                    matches.push(new Match(currentColor, currentSuite, isCombo));
                 }
             }
         }
@@ -340,11 +342,9 @@ export default class GridStore {
         }, 100);
         const newMatches: MatchResult = this.getMatch(true);
         if (newMatches.cellsToRemove.length > 0) {
-            newMatches.matches.forEach(m => {
-                setTimeout(() => {
-                    this.countMatch(m);
-                }, 50)
-            });
+            setTimeout(() => {
+                this.matches = this.matches.concat(newMatches.matches);
+            }, 500)
             setTimeout(() => {
                 this.removeMatches(newMatches.cellsToRemove);
             }, 600);
@@ -399,11 +399,10 @@ export default class GridStore {
                     this.switchCellData(fx, fy, sx, sy, true);
                 }, 500)
             } else if (matches.cellsToRemove.length > 0) {
-                matches.matches.forEach(m => {
-                    setTimeout(() => {
-                        this.countMatch(m);
-                    }, 50)
-                })
+                setTimeout(() => {
+                    this.matches = this.matches.concat(matches.matches);
+                }, 50)
+
                 this.removeMatches(matches.cellsToRemove);
             } else {
                 this.canMove = true;

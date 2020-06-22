@@ -28,8 +28,8 @@ export default class MessageStore {
         this.messages.push(new Message(message));
     }
 
-    reactionToNewMessage = reaction(
-        () => this.messages.length,
-        length => console.log("New message :", this.messages[length-1].message)
-    )
+    //reactionToNewMessage = reaction(
+    //    () => this.messages.length,
+    //    length => console.log("New message :", this.messages[length-1].message)
+    //)
 }

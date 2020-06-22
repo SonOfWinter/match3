@@ -50,25 +50,21 @@ export default class StatStore {
 
     @action
     addMatch3() {
-        //console.log('addMatch3');
         ++this.match3;
     }
 
     @action
     addMatch4() {
-        //console.log('addMatch4');
         ++this.match4;
     }
 
     @action
     addMatch5() {
-        //console.log('addMatch5');
         ++this.match5;
     }
 
     @action
     addColor = (color: string, number: number) => {
-        //console.log('addColor ' + color + '/' + number);
         switch (color) {
             case 'blue':
                 this.blue = this.blue + number;
@@ -93,7 +89,6 @@ export default class StatStore {
 
     @action
     addColorCount = (color: string, count: number) => {
-        //console.log('addColorCount ' + color + '/' + count);
         switch (color) {
             case 'blue':
                 this.blueCount = this.blueCount + count;
