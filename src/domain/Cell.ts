@@ -1,3 +1,4 @@
+import {observable} from "mobx";
 import blue from "@material-ui/core/colors/blue";
 import InvertColorsIcon from "@material-ui/icons/InvertColors";
 import red from "@material-ui/core/colors/red";
@@ -76,18 +77,18 @@ export interface CellInfo extends CellPart {
 }
 
 export default class Cell implements CellInfo {
-    id: string;
-    x: number;
-    y: number;
-    zIndex: number;
-    selected: boolean;
-    canBeSelected: boolean;
-    top: number;
-    left: number;
-    name: string;
-    backgroundColor: string;
-    color: string;
-    icon: object;
+    @observable id: string;
+    @observable x: number;
+    @observable y: number;
+    @observable zIndex: number;
+    @observable selected: boolean;
+    @observable canBeSelected: boolean;
+    @observable top: number;
+    @observable left: number;
+    @observable name: string;
+    @observable backgroundColor: string;
+    @observable color: string;
+    @observable icon: object;
 
     constructor(x: number, y: number, squareSize: number, color?: string) {
         this.id = makeId(10);
@@ -160,6 +161,8 @@ export default class Cell implements CellInfo {
         this.top = ((squareSize-1) - y) * 66;
         this.left = x * 66;
         this.zIndex = (squareSize-1) - y;
+        this.selected = false;
+        this.canBeSelected = false;
     }
 
     setData(name:string, backgroundColor:string, color:string, icon:object) {

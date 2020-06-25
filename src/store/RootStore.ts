@@ -1,16 +1,16 @@
 import {createContext} from 'react';
-import NewGridStore from "./NewGridStore";
+import GridStore from "./GridStore";
 import MessageStore from "./MessageStore";
 import StatStore from "./StatStore";
 
 export class RootStore {
-    gridStore: NewGridStore;
+    gridStore: GridStore;
     messageStore: MessageStore;
     statStore: StatStore;
     constructor() {
         this.messageStore = new MessageStore(this);
         this.statStore = new StatStore(this);
-        this.gridStore = new NewGridStore(this);
+        this.gridStore = new GridStore(this);
     }
 }
 

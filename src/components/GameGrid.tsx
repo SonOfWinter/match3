@@ -33,7 +33,7 @@ export const GameGrid = () => {
         <Grid item xs={12} lg={6}>
             <Paper className={classes.paper}>
                 <div className={classes.container}>
-                    {info.grid.grid.flat().map(cellInfo => {
+                    {info.grid.cells.map(cellInfo => {
                         if (cellInfo !== null) {
                             return (<RoundCell
                                 key={cellInfo.id}

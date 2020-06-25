@@ -31,7 +31,7 @@ export default class Grid {
 
     private squareSize: number;
     @observable canMove: boolean = true;
-    @observable grid: Cell[] = [];
+    @observable cells: Cell[] = [];
     @observable selectedCell: Cell | null = null;
     @observable forInitGridStat: ForInitGrid = {x: [], y: []};
 
@@ -58,7 +58,7 @@ export default class Grid {
         for (let x: number = 0; x < squareSize; x++) {
             for (let y: number = 0; y < squareSize; y++) {
                 const cell = this.getNextColor(x, y, true);
-                this.grid.push(cell);
+                this.cells.push(cell);
             }
         }
     }
@@ -98,22 +98,12 @@ export default class Grid {
         }
     }
 
-    @computed
-    get info() {
-        return {
-            grid: this.grid,
-            selectedCell: this.selectedCell,
-            canMove: this.canMove
-        };
-    }
-
-    @action
-    get = (x: number, y: number, createIfUndefined: boolean = false, usedGrid: Cell[] | null = null): Cell | null => {
+    get(x: number, y: number, createIfUndefined: boolean = false, usedGrid: Cell[] | null = null): Cell | null {
         let grid: Cell[];
         if (usedGrid !== null) {
             grid = usedGrid;
         } else {
-            grid = this.grid;
+            grid = this.cells;
         }
 
         let cell = grid.find(cell => cell.x === x && cell.y === y);
@@ -128,7 +118,6 @@ export default class Grid {
         return cell;
     }
 
-    @action.bound
     private setNearCanBeSelected(x: number, y: number, canBeselected: boolean): void {
         let leftCell = this.get(x - 1, y);
         if (leftCell !== null) {
@@ -153,8 +142,7 @@ export default class Grid {
      * @param y
      * return need to execute next step
      */
-    @action
-    select = (x: number, y: number): boolean => {
+    select(x: number, y: number): boolean {
         let cell = this.get(x, y);
         if (cell === null) {
             return false;
@@ -183,7 +171,7 @@ export default class Grid {
         return false;
     }
 
-    getGridMatch(grid: Cell[], isCombo: boolean): MatchResult {
+    getGridMatch(isCombo: boolean): MatchResult {
         let cellsToRemove: SimpleCell[] = [];
         let matches: Match[] = [];
         let currentColor: string = '';
@@ -191,7 +179,7 @@ export default class Grid {
         let elemInList: any;
         for (let x: number = 0; x < this.squareSize; x++) {
             for (let y: number = 0; y < this.squareSize; y++) {
-                let cell = this.get(x, y, false, grid);
+                let cell = this.get(x, y, false, this.cells);
                 if (cell === null) {
                     continue;
                 }
@@ -237,7 +225,7 @@ export default class Grid {
         currentSuite = 0;
         for (let y: number = 0; y < this.squareSize; y++) {
             for (let x: number = 0; x < this.squareSize; x++) {
-                let cell = this.get(x, y, false, grid);
+                let cell = this.get(x, y, false, this.cells);
                 if (cell === null) {
                     continue;
                 }
@@ -293,12 +281,11 @@ export default class Grid {
         return {
             cellsToRemove: returnedCellsToRemove,
             matches,
-            newGrid: grid
+            newGrid: this.cells
         };
     }
 
-    @action
-    moveNewCells = () => {
+    moveNewCells() {
         for (let x: number = 0; x < this.squareSize; x++) {
             for (let y: number = 0; y < this.squareSize; y++) {
                 let cell = this.get(x, y);
@@ -309,8 +296,7 @@ export default class Grid {
         }
     }
 
-    @action
-    removeMatches = (matches: SimpleCell[]) => {
+    removeMatches(matches: SimpleCell[]) {
         matches.forEach(simpleCell => {
             this.remove(simpleCell.x, simpleCell.y);
         });
@@ -318,7 +304,6 @@ export default class Grid {
 
     }
 
-    @action.bound
     fillGrid(matches: SimpleCell[]) {
         for (let x: number = 0; x < this.squareSize; x++) {
             let newY: number = (this.squareSize - 1);
@@ -326,18 +311,17 @@ export default class Grid {
             yMatches.forEach(m => {
                 let newCell = this.getNextColor(x, newY, false);
                 newCell.top = ((((this.squareSize - 1) - newY) * 66) - 528);
-                this.grid.push(newCell);
+                this.cells.push(newCell);
                 newY--;
             })
         }
     }
 
-    @action.bound
     remove(x: number, y: number) {
         let cell = this.get(x, y);
         if (cell !== null) {
-            const indexToRemove = this.grid.indexOf(cell);
-            this.grid.splice(indexToRemove, 1);
+            const indexToRemove = this.cells.indexOf(cell);
+            this.cells.splice(indexToRemove, 1);
             for (let i: number = y; i < (this.squareSize - 1); i++) {
                 let editedCell = this.get(x, i + 1);
                 if (editedCell !== null) {
@@ -349,25 +333,15 @@ export default class Grid {
         }
     }
 
-    @action
-    invertCellsPosition = (fx: number, fy: number, sx: number, sy: number) => {
+    invertCellsPosition(fx: number, fy: number, sx: number, sy: number) {
         let cellF = this.get(fx, fy);
         let cellS = this.get(sx, sy);
-        if (cellF !== null && cellS !== null) {
+        if (cellF !== null) {
             cellF.setPosition(sx, sy, this.squareSize);
-            cellF.setPosition(fx, fy, this.squareSize);
         }
-    }
-
-    @action
-    invertCellData = (fx: number, fy: number, sx: number, sy: number) => {
-        let cellF = this.get(fx, fy);
-        let cellS = this.get(sx, sy);
-        if (cellF !== null && cellS !== null) {
-            let tempCell = new Cell(0,0,this.squareSize, 'white');
-            tempCell.copy(cellF);
-            cellF.setData(cellS.name, cellS.backgroundColor, cellS.color, cellS.icon);
-            cellS.setData(tempCell.name, tempCell.backgroundColor, tempCell.color, tempCell.icon);
+        if (cellS !== null) {
+            cellS.setPosition(fx, fy, this.squareSize);
         }
+        return true;
     }
 }

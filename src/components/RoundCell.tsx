@@ -50,7 +50,7 @@ export default function RoundCell(props: RoundCellProps) {
     const {select, info} = rootStore.gridStore
     const otherClass = canBeSelected ? classes.cellCanBeSelected : selected ? classes.cellSelected : '';
     const iconComponent = React.createElement(icon, {style: {color, width: '50%', height: '50%', margin: '25%'}});
-    const canBeClick:boolean = info.canMove && (info.grid.selectedCell === null || selected || canBeSelected);
+    const canBeClick:boolean = info.grid.canMove && (info.grid.selectedCell === null || selected || canBeSelected);
 
     return (
         <motion.div
