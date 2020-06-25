@@ -98,7 +98,7 @@ export default class GridStore {
         }
         if (color !== null) {
             this.rootStore.statStore.addColorCount(color, 1);
-            return new Cell(x, y, color);
+            return new Cell(x, y, squareSize, color);
         } else {
             return this.getNextColor(x, y, forInit, count + 1);
         }
@@ -190,11 +190,11 @@ export default class GridStore {
 
                 this.selectedCell = null;
                 setTimeout(() => {
-                        this.invertCellData(first.x, first.y, second.x, second.y)
+                        this.invertCellPosition(first.x, first.y, second.x, second.y)
                     }, 50
                 );
                 setTimeout(() => {
-                    this.switchCellData(first.x, first.y, second.x, second.y);
+                    this.invertCellData(first.x, first.y, second.x, second.y);
                 }, 500)
             }
 
@@ -370,7 +370,7 @@ export default class GridStore {
     }
 
     @action.bound
-    switchCellData(fx: number, fy: number, sx: number, sy: number, isRevert: boolean = false) {
+    invertCellData(fx: number, fy: number, sx: number, sy: number, isRevert: boolean = false) {
         let first = {...this.grid[fx][fy]};
         let second = {...this.grid[sx][sy]};
         this.grid[fx][fy] = {
@@ -393,10 +393,10 @@ export default class GridStore {
             let matches: MatchResult = this.getMatch();
             if (matches.cellsToRemove.length === 0) {
                 setTimeout(() => {
-                    this.invertCellData(fx, fy, sx, sy);
+                    this.invertCellPosition(fx, fy, sx, sy);
                 }, 50)
                 setTimeout(() => {
-                    this.switchCellData(fx, fy, sx, sy, true);
+                    this.invertCellData(fx, fy, sx, sy, true);
                 }, 500)
             } else if (matches.cellsToRemove.length > 0) {
                 setTimeout(() => {
@@ -413,7 +413,7 @@ export default class GridStore {
     }
 
     @action.bound
-    invertCellData(fx: number, fy: number, sx: number, sy: number) {
+    invertCellPosition(fx: number, fy: number, sx: number, sy: number) {
         let first = {...this.grid[fx][fy]};
         let second = {...this.grid[sx][sy]};
         this.grid[fx][fy] = {

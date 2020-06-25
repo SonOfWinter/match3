@@ -28,12 +28,12 @@ export const GameGrid = () => {
     const rootStore = useContext(RootStore);
 
     const classes = useStyles();
-    const {flatGrid} = rootStore.gridStore;
+    const {info} = rootStore.gridStore;
     return (
         <Grid item xs={12} lg={6}>
             <Paper className={classes.paper}>
                 <div className={classes.container}>
-                    {flatGrid.map(cellInfo => {
+                    {info.grid.grid.flat().map(cellInfo => {
                         if (cellInfo !== null) {
                             return (<RoundCell
                                 key={cellInfo.id}

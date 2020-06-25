@@ -89,15 +89,15 @@ export default class Cell implements CellInfo {
     color: string;
     icon: object;
 
-    constructor(x: number, y: number, color?: string) {
+    constructor(x: number, y: number, squareSize: number, color?: string) {
         this.id = makeId(10);
         this.x = x;
         this.y = y;
         this.selected = false;
         this.canBeSelected = false;
-        this.top = (7 - y) * 66;
+        this.top = ((squareSize-1) - y) * 66;
         this.left = x * 66;
-        this.zIndex = 7 - y;
+        this.zIndex = (squareSize-1) - y;
         if (color) {
             this.setColor(color);
         } else {
@@ -108,7 +108,7 @@ export default class Cell implements CellInfo {
         }
     }
 
-    copy(cell:Cell):Cell {
+    copy(cell: Cell): Cell {
         this.id = cell.id;
         this.x = cell.x;
         this.y = cell.y;
@@ -152,5 +152,20 @@ export default class Cell implements CellInfo {
             this.color = data.color;
             this.icon = data.icon;
         }
+    }
+
+    setPosition(x: number, y: number, squareSize: number) {
+        this.x = x;
+        this.y = y;
+        this.top = ((squareSize-1) - y) * 66;
+        this.left = x * 66;
+        this.zIndex = (squareSize-1) - y;
+    }
+
+    setData(name:string, backgroundColor:string, color:string, icon:object) {
+        this.name = name;
+        this.backgroundColor = backgroundColor;
+        this.color = color;
+        this.icon = icon;
     }
 }

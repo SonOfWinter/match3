@@ -1,4 +1,4 @@
-import {action, computed, observable, reaction} from "mobx";
+import {action, computed, observable} from "mobx";
 import Message from "../domain/Message";
 import {RootStore} from "./RootStore";
 import Match from "../domain/Match";
@@ -27,9 +27,4 @@ export default class MessageStore {
         const message = 'Match-' + (match.suite + 1) + " " + match.color + (match.isCombo ? ' COMBO' : '');
         this.messages.push(new Message(message));
     }
-
-    //reactionToNewMessage = reaction(
-    //    () => this.messages.length,
-    //    length => console.log("New message :", this.messages[length-1].message)
-    //)
 }
