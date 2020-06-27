@@ -298,15 +298,16 @@ export default class Grid {
         }
     }
 
-    removeMatches(matches: SimpleCell[]) {
+    removeMatches(matches: SimpleCell[]): Cell[] {
         matches.forEach(simpleCell => {
             this.remove(simpleCell.x, simpleCell.y);
         });
-        this.fillGrid(matches);
+        return this.fillGrid(matches);
 
     }
 
-    fillGrid(matches: SimpleCell[]) {
+    fillGrid(matches: SimpleCell[]): Cell[] {
+        let newCells: Cell[] = [];
         for (let x: number = 0; x < this.squareSize; x++) {
             let newY: number = (this.squareSize - 1);
             const yMatches = matches.filter(m => m.x === x);
@@ -314,9 +315,11 @@ export default class Grid {
                 let newCell = this.getNextColor(x, newY, false);
                 newCell.top = ((((this.squareSize - 1) - newY) * 66) - 528);
                 this.cells.push(newCell);
+                newCells.push(newCell);
                 newY--;
             })
         }
+        return newCells;
     }
 
     remove(x: number, y: number) {

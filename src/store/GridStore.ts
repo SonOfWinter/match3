@@ -79,7 +79,7 @@ export default class GridStore {
     init() {
         this.grid = new Grid(squareSize);
         this.grid.cells.forEach(cell => {
-                this.rootStore.statStore.addColorCount(cell.color, 1);
+                this.rootStore.statStore.addColorCount(cell.name, 1);
             }
         );
     }
@@ -139,13 +139,16 @@ export default class GridStore {
 
     @action.bound
     removeMatches(simpleCells: SimpleCell[]) {
-        this.grid.removeMatches(simpleCells);
         simpleCells.forEach(match => {
             const cell = this.grid.get(match.x, match.y);
             if (cell !== null) {
                 this.rootStore.statStore.addColorCount(cell.name, -1);
             }
         });
+        const newCells = this.grid.removeMatches(simpleCells);
+        newCells.forEach(c => {
+            this.rootStore.statStore.addColorCount(c.name, 1);
+        })
         setTimeout(() => {
             this.grid.moveNewCells();
         }, 100);
