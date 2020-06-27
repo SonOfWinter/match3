@@ -1,13 +1,12 @@
-import React, {useContext} from 'react';
-import {makeStyles} from "@material-ui/core";
-import RootStore from "../store/RootStore";
-import { motion } from "framer-motion";
+import React, {Component} from 'react';
+import {motion} from "framer-motion";
+import withStyles from "@material-ui/core/styles/withStyles";
 
 const size = '62px';
 const margin = '2px';
 const transition = 'top 0.3s ease, left 0.3s ease';
 
-const useStyles = makeStyles({
+const styles = {
     cell: {
         position: "absolute",
         cursor: 'pointer',
@@ -28,44 +27,66 @@ const useStyles = makeStyles({
     cellCanBeSelected: {
         color: 'grey'
     }
-});
+};
 
 type RoundCellProps = {
     backgroundColor: string,
     color: string,
     selected: boolean,
-    canBeSelected: boolean,
     x: number,
     y: number,
     top: number,
     left: number,
     zIndex: number,
-    icon: any
+    icon: any,
+    select: (x: number, y:number) => void,
+    classes: object
 }
 
-export default function RoundCell(props: RoundCellProps) {
-    const {backgroundColor, color, selected, x, y, top, left, zIndex, canBeSelected, icon } = props;
-    const classes = useStyles();
-    const rootStore = useContext(RootStore);
-    const {select, info} = rootStore.gridStore
-    const otherClass = canBeSelected ? classes.cellCanBeSelected : selected ? classes.cellSelected : '';
-    const iconComponent = React.createElement(icon, {style: {color, width: '50%', height: '50%', margin: '25%'}});
-    const canBeClick:boolean = info.grid.canMove && (info.grid.selectedCell === null || selected || canBeSelected);
+export class RoundCell extends Component<RoundCellProps> {
 
-    return (
-        <motion.div
-            animate={{ scale: (selected ? 1.1 : 1) , opacity: (selected ? 0.8 : 1)}}
-            whileHover={{ scale: (canBeClick ? 1.1 : 1), opacity: (canBeClick ? 0.8 : 1) }}
-            whileTap={{ scale: 0.8 }}
-            className={`${classes.cell} ${otherClass}`}
-            style={{'backgroundColor': backgroundColor, top: top + 'px', left: left + 'px', zIndex: zIndex}}
-            onClick={() => {
-                if (canBeClick) {
+    shouldComponentUpdate(nextProps:RoundCellProps, nextState:RoundCellProps) {
+        return nextProps.top !== this.props.top
+        || nextProps.left !== this.props.left
+        || nextProps.x !== this.props.x
+        || nextProps.y !== this.props.y
+        || nextProps.selected !== this.props.selected;
+    }
+
+    render() {
+        const {classes, backgroundColor, color, selected, x, y, top, left, zIndex, icon, select} = this.props;
+        // @ts-ignore
+        const otherClass = selected ? classes.cellSelected : '';
+        const iconComponent = React.createElement(icon, {
+            style: {
+                color,
+                width: '50%',
+                height: '50%',
+                margin: '25%'
+            }
+        });
+        return (
+            <motion.div
+                whileHover={{scale: (1.1), opacity: (0.8)}}
+                whileTap={{scale: 0.8}}
+                animate={{scale: (selected ? 1.1 : 1), opacity: (selected ? 0.8 : 1)}}
+                // @ts-ignore
+                className={`${classes.cell} ${otherClass}`}
+                style={{
+                    'backgroundColor': backgroundColor,
+                    top: top + 'px',
+                    left: left + 'px',
+                    zIndex: zIndex
+                }}
+                onClick={() => {
                     select(x, y);
-                }
-            }}
-        >
-            {iconComponent}
-        </motion.div>
-    );
+                }}
+            >
+                {iconComponent}
+            </motion.div>
+        );
+    }
 }
+
+// @ts-ignore
+export default withStyles(styles)(RoundCell);

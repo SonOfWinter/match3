@@ -143,30 +143,32 @@ export default class Grid {
      * return need to execute next step
      */
     select(x: number, y: number): boolean {
-        let cell = this.get(x, y);
-        if (cell === null) {
-            return false;
-        }
-        let alreadySelected: boolean = cell.selected;
-        if (this.selectedCell === null || alreadySelected) {
-            cell.selected = !alreadySelected;
-            if (alreadySelected) {
-                this.selectedCell = null;
-            } else {
-                this.selectedCell = new Cell(0, 0, this.squareSize, 'white');
-                this.selectedCell.copy(cell);
-            }
-            this.setNearCanBeSelected(x, y, !alreadySelected);
-        } else if (cell.canBeSelected) {
-            this.canMove = false;
-            let selected = this.get(this.selectedCell.x, this.selectedCell.y);
-            if (selected === null) {
+        if (this.canMove) {
+            let cell = this.get(x, y);
+            if (cell === null) {
                 return false;
             }
-            selected.selected = false;
-            this.setNearCanBeSelected(this.selectedCell.x, this.selectedCell.y, false);
-            this.selectedCell = null;
-            return true;
+            let alreadySelected: boolean = cell.selected;
+            if (this.selectedCell === null || alreadySelected) {
+                cell.selected = !alreadySelected;
+                if (alreadySelected) {
+                    this.selectedCell = null;
+                } else {
+                    this.selectedCell = new Cell(0, 0, this.squareSize, 'white');
+                    this.selectedCell.copy(cell);
+                }
+                this.setNearCanBeSelected(x, y, !alreadySelected);
+            } else if (cell.canBeSelected) {
+                this.canMove = false;
+                let selected = this.get(this.selectedCell.x, this.selectedCell.y);
+                if (selected === null) {
+                    return false;
+                }
+                selected.selected = false;
+                this.setNearCanBeSelected(this.selectedCell.x, this.selectedCell.y, false);
+                this.selectedCell = null;
+                return true;
+            }
         }
         return false;
     }

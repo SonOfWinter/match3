@@ -28,7 +28,7 @@ export const GameGrid = () => {
     const rootStore = useContext(RootStore);
 
     const classes = useStyles();
-    const {info} = rootStore.gridStore;
+    const {info, select} = rootStore.gridStore;
     return (
         <Grid item xs={12} lg={6}>
             <Paper className={classes.paper}>
@@ -40,13 +40,13 @@ export const GameGrid = () => {
                                 backgroundColor={cellInfo.backgroundColor}
                                 color={cellInfo.color}
                                 selected={cellInfo.selected || false}
-                                canBeSelected={cellInfo.canBeSelected || false}
                                 x={cellInfo.x}
                                 y={cellInfo.y}
                                 top={cellInfo.top}
                                 left={cellInfo.left}
                                 zIndex={cellInfo.zIndex}
                                 icon={cellInfo.icon}
+                                select={select}
                             />);
                         } else {
                             return '';
