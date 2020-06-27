@@ -44,17 +44,32 @@ export default class GridStore {
         (newMatches: Match[]) => {
             const matches = newMatches.filter(x => !this.oldMatches.includes(x));
             matches.forEach(match => {
-                this.rootStore.messageStore.addMatch(match);
+                setTimeout(
+                    () => {this.rootStore.messageStore.addMatch(match)},
+                    400
+                );
                 if (match.suite === 2) {
-                    this.rootStore.statStore.addMatch3();
+                    setTimeout(
+                        () => {this.rootStore.statStore.addMatch3()},
+                        400
+                    );
                 }
                 if (match.suite === 3) {
-                    this.rootStore.statStore.addMatch4();
+                    setTimeout(
+                        () => {this.rootStore.statStore.addMatch4()},
+                        400
+                    );
                 }
                 if (match.suite === 4) {
-                    this.rootStore.statStore.addMatch5();
+                    setTimeout(
+                        () => {this.rootStore.statStore.addMatch5()},
+                        400
+                    );
                 }
-                this.rootStore.statStore.addColor(match.color, match.suite + 1);
+                setTimeout(
+                    () => {this.rootStore.statStore.addColor(match.color, match.suite + 1)},
+                    400
+                );
             });
             this.oldMatches = [...newMatches];
         }

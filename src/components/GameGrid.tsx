@@ -26,7 +26,6 @@ const useStyles = makeStyles({
 
 export const GameGrid = () => {
     const rootStore = useContext(RootStore);
-
     const classes = useStyles();
     const {info, select} = rootStore.gridStore;
     return (
