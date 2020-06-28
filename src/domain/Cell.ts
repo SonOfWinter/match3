@@ -1,4 +1,4 @@
-import {observable} from "mobx";
+import { observable } from "mobx";
 import blue from "@material-ui/core/colors/blue";
 import InvertColorsIcon from "@material-ui/icons/InvertColors";
 import red from "@material-ui/core/colors/red";
@@ -14,7 +14,7 @@ import amber from "@material-ui/core/colors/amber";
 import BugReportIcon from "@material-ui/icons/BugReport";
 import blueGrey from "@material-ui/core/colors/blueGrey";
 import ExtensionIcon from "@material-ui/icons/Extension";
-import {makeId} from "../utils/IdUtils";
+import { makeId } from "../utils/IdUtils";
 
 export const blueCell = {
     name: 'blue',
@@ -96,9 +96,9 @@ export default class Cell implements CellInfo {
         this.y = y;
         this.selected = false;
         this.canBeSelected = false;
-        this.top = ((squareSize-1) - y) * 66;
-        this.left = x * 66;
-        this.zIndex = (squareSize-1) - y;
+        this.top = ((squareSize - 1) - y) * 12.5;
+        this.left = x * 12.5;
+        this.zIndex = (squareSize - 1) - y;
         if (color) {
             this.setColor(color);
         } else {
@@ -129,22 +129,22 @@ export default class Cell implements CellInfo {
         let data = null;
         switch (color) {
             case 'blue':
-                data = {...blueCell};
+                data = { ...blueCell };
                 break;
             case 'red':
-                data = {...redCell};
+                data = { ...redCell };
                 break;
             case 'green':
-                data = {...greenCell};
+                data = { ...greenCell };
                 break;
             case 'purple':
-                data = {...purpleCell};
+                data = { ...purpleCell };
                 break;
             case 'amber':
-                data = {...amberCell};
+                data = { ...amberCell };
                 break;
             case 'grey':
-                data = {...greyCell};
+                data = { ...greyCell };
                 break;
         }
         if (data !== null) {
@@ -158,14 +158,14 @@ export default class Cell implements CellInfo {
     setPosition(x: number, y: number, squareSize: number) {
         this.x = x;
         this.y = y;
-        this.top = ((squareSize-1) - y) * 66;
-        this.left = x * 66;
-        this.zIndex = (squareSize-1) - y;
+        this.top = ((squareSize - 1) - y) * 12.5;
+        this.left = x * 12.5;
+        this.zIndex = (squareSize - 1) - y;
         this.selected = false;
         this.canBeSelected = false;
     }
 
-    setData(name:string, backgroundColor:string, color:string, icon:object) {
+    setData(name: string, backgroundColor: string, color: string, icon: object) {
         this.name = name;
         this.backgroundColor = backgroundColor;
         this.color = color;

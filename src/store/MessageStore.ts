@@ -1,6 +1,6 @@
-import {action, computed, observable} from "mobx";
+import { action, computed, observable } from "mobx";
 import Message from "../domain/Message";
-import {RootStore} from "./RootStore";
+import { RootStore } from "./RootStore";
 import Match from "../domain/Match";
 
 export default class MessageStore {
@@ -21,7 +21,7 @@ export default class MessageStore {
     add = (message: string) => {
         this.messages.push(new Message(message));
     }
-    
+
     @action
     addMatch = (match: Match) => {
         const message = 'Match-' + (match.suite + 1) + " " + match.color + (match.isCombo ? ' COMBO' : '');

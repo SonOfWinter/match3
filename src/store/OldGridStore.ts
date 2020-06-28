@@ -1,6 +1,6 @@
-import {action, computed, observable, reaction} from "mobx"
-import Cell, {CellInfo} from '../domain/Cell';
-import {RootStore} from "./RootStore";
+import { action, computed, observable, reaction } from "mobx"
+import Cell, { CellInfo } from '../domain/Cell';
+import { RootStore } from "./RootStore";
 import Match from "../domain/Match";
 
 const squareSize = 8;
@@ -45,7 +45,7 @@ export default class OldGridStore {
     @observable matches: Match[] = [];
     @observable oldMatches: Match[] = [];
 
-    forInitGridStat: ForInitGrid = {x: [], y: []};
+    forInitGridStat: ForInitGrid = { x: [], y: [] };
 
     reactionToNewMatch = reaction(
         () => this.matches,
@@ -62,7 +62,7 @@ export default class OldGridStore {
                 if (match.suite === 4) {
                     this.rootStore.statStore.addMatch5();
                 }
-                this.rootStore.statStore.addColor(match.color, match.suite+1);
+                this.rootStore.statStore.addColor(match.color, match.suite + 1);
             });
             this.oldMatches = [...newMatches];
         }
@@ -153,7 +153,7 @@ export default class OldGridStore {
         if (this.selectedCell === null || isSelected) {
             this.grid[x][y].selected = !isSelected;
             if (!isSelected) {
-                this.selectedCell = {...this.grid[x][y]};
+                this.selectedCell = { ...this.grid[x][y] };
             } else {
                 this.selectedCell = null;
             }
@@ -173,8 +173,8 @@ export default class OldGridStore {
             let isCanBeSelected: boolean = this.grid[x][y].canBeSelected;
             if (isCanBeSelected) {
                 this.canMove = false;
-                let first = {...this.selectedCell, selected: false};
-                let second = {...this.grid[x][y]};
+                let first = { ...this.selectedCell, selected: false };
+                let second = { ...this.grid[x][y] };
                 if (first.x - 1 >= 0) {
                     this.grid[first.x - 1][first.y].canBeSelected = false;
                 }
@@ -190,8 +190,8 @@ export default class OldGridStore {
 
                 this.selectedCell = null;
                 setTimeout(() => {
-                        this.invertCellPosition(first.x, first.y, second.x, second.y)
-                    }, 50
+                    this.invertCellPosition(first.x, first.y, second.x, second.y)
+                }, 50
                 );
                 setTimeout(() => {
                     this.invertCellData(first.x, first.y, second.x, second.y);
@@ -207,7 +207,7 @@ export default class OldGridStore {
     }
 
     getGridMatch(grid: any[], isCombo: boolean): MatchResult {
-        let newGrid = {...grid};
+        let newGrid = { ...grid };
         let cellsToRemove: SimpleCell[] = [];
         let matches: Match[] = [];
         let currentColor: string = '';
@@ -232,20 +232,20 @@ export default class OldGridStore {
                 if (currentSuite === 2) {
                     elemInList = cellsToRemove.find(elem => elem.x === x && elem.y === y - 2);
                     if (elemInList === undefined) {
-                        cellsToRemove.push({x, y: y - 2});
+                        cellsToRemove.push({ x, y: y - 2 });
                     }
                     elemInList = cellsToRemove.find(elem => elem.x === x && elem.y === y - 1);
                     if (elemInList === undefined) {
-                        cellsToRemove.push({x, y: y - 1});
+                        cellsToRemove.push({ x, y: y - 1 });
                     }
                     elemInList = cellsToRemove.find(elem => elem.x === x && elem.y === y);
                     if (elemInList === undefined) {
-                        cellsToRemove.push({x, y});
+                        cellsToRemove.push({ x, y });
                     }
                 } else if (currentSuite > 2) {
                     elemInList = cellsToRemove.find(elem => elem.x === x && elem.y === y);
                     if (elemInList === undefined) {
-                        cellsToRemove.push({x, y});
+                        cellsToRemove.push({ x, y });
                     }
                 }
                 if (y >= squareSize - 1 && currentSuite >= 2) {
@@ -275,20 +275,20 @@ export default class OldGridStore {
                 if (currentSuite === 2) {
                     elemInList = cellsToRemove.find(elem => elem.x === x - 2 && elem.y === y);
                     if (elemInList === undefined) {
-                        cellsToRemove.push({x: x - 2, y});
+                        cellsToRemove.push({ x: x - 2, y });
                     }
                     elemInList = cellsToRemove.find(elem => elem.x === x - 1 && elem.y === y);
                     if (elemInList === undefined) {
-                        cellsToRemove.push({x: x - 1, y});
+                        cellsToRemove.push({ x: x - 1, y });
                     }
                     elemInList = cellsToRemove.find(elem => elem.x === x && elem.y === y);
                     if (elemInList === undefined) {
-                        cellsToRemove.push({x, y});
+                        cellsToRemove.push({ x, y });
                     }
                 } else if (currentSuite > 2) {
                     elemInList = cellsToRemove.find(elem => elem.x === x && elem.y === y);
                     if (elemInList === undefined) {
-                        cellsToRemove.push({x, y});
+                        cellsToRemove.push({ x, y });
                     }
                 }
                 if (x >= squareSize - 1 && currentSuite >= 2) {
@@ -316,7 +316,7 @@ export default class OldGridStore {
 
     @action.bound
     getMatch(isCombo: boolean = false): MatchResult {
-        return this.getGridMatch({...this.grid}, isCombo);
+        return this.getGridMatch({ ...this.grid }, isCombo);
     }
 
 
@@ -371,8 +371,8 @@ export default class OldGridStore {
 
     @action.bound
     invertCellData(fx: number, fy: number, sx: number, sy: number, isRevert: boolean = false) {
-        let first = {...this.grid[fx][fy]};
-        let second = {...this.grid[sx][sy]};
+        let first = { ...this.grid[fx][fy] };
+        let second = { ...this.grid[sx][sy] };
         this.grid[fx][fy] = {
             ...second,
             x: fx,
@@ -414,8 +414,8 @@ export default class OldGridStore {
 
     @action.bound
     invertCellPosition(fx: number, fy: number, sx: number, sy: number) {
-        let first = {...this.grid[fx][fy]};
-        let second = {...this.grid[sx][sy]};
+        let first = { ...this.grid[fx][fy] };
+        let second = { ...this.grid[sx][sy] };
         this.grid[fx][fy] = {
             ...first,
             selected: false,
@@ -443,7 +443,7 @@ export default class OldGridStore {
         this.rootStore.statStore.addColorCount(this.grid[x][y].name, -1);
         this.grid[x][y] = null;
         for (let i: number = y; i < 7; i++) {
-            this.grid[x][i] = {...this.grid[x][i + 1], y: i, top: (7 - i) * 66, zIndex: 7 - i};
+            this.grid[x][i] = { ...this.grid[x][i + 1], y: i, top: (7 - i) * 66, zIndex: 7 - i };
         }
     }
 }

@@ -1,4 +1,4 @@
-import {makeId} from "../utils/IdUtils";
+import { makeId } from "../utils/IdUtils";
 
 export default class Message {
     id: string;

@@ -1,5 +1,5 @@
-import {action, computed, observable} from "mobx";
-import {RootStore} from "./RootStore";
+import { action, computed, observable } from "mobx";
+import { RootStore } from "./RootStore";
 
 export default class StatStore {
 
@@ -73,7 +73,7 @@ export default class StatStore {
                 this.red = this.red + number;
                 break;
             case 'green':
-                this.green = this.green +number;
+                this.green = this.green + number;
                 break;
             case 'purple':
                 this.purple = this.purple + number;
@@ -82,7 +82,7 @@ export default class StatStore {
                 this.amber = this.amber + number;
                 break;
             case 'grey':
-                this.grey = this.grey +number;
+                this.grey = this.grey + number;
                 break;
         }
     }
@@ -98,7 +98,7 @@ export default class StatStore {
                 this.redCount = this.redCount + count;
                 break;
             case 'green':
-                this.greenCount = this.greenCount +count;
+                this.greenCount = this.greenCount + count;
                 break;
             case 'purple':
                 this.purpleCount = this.purpleCount + count;
@@ -107,7 +107,7 @@ export default class StatStore {
                 this.amberCount = this.amberCount + count;
                 break;
             case 'grey':
-                this.greyCount = this.greyCount +count;
+                this.greyCount = this.greyCount + count;
                 break;
         }
     }

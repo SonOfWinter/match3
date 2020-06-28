@@ -1,4 +1,4 @@
-import {createContext} from 'react';
+import { createContext } from 'react';
 import GridStore from "./GridStore";
 import MessageStore from "./MessageStore";
 import StatStore from "./StatStore";

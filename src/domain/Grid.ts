@@ -1,4 +1,4 @@
-import {action, computed, observable} from "mobx";
+import {observable} from "mobx";
 import Cell from "./Cell";
 import Match from "./Match";
 
@@ -292,7 +292,7 @@ export default class Grid {
             for (let y: number = 0; y < this.squareSize; y++) {
                 let cell = this.get(x, y);
                 if (cell !== null && cell.top < 0) {
-                    cell.top = ((this.squareSize - 1) - y) * 66;
+                    cell.top = ((this.squareSize - 1) - y) * 12.5;
                 }
             }
         }
@@ -313,7 +313,7 @@ export default class Grid {
             const yMatches = matches.filter(m => m.x === x);
             yMatches.forEach(m => {
                 let newCell = this.getNextColor(x, newY, false);
-                newCell.top = ((((this.squareSize - 1) - newY) * 66) - 528);
+                newCell.top = ((((this.squareSize - 1) - newY) * 12.5) - 100);
                 this.cells.push(newCell);
                 newCells.push(newCell);
                 newY--;
@@ -331,7 +331,7 @@ export default class Grid {
                 let editedCell = this.get(x, i + 1);
                 if (editedCell !== null) {
                     editedCell.y = i;
-                    editedCell.top = ((this.squareSize - 1) - i) * 66;
+                    editedCell.top = ((this.squareSize - 1) - i) * 12.5;
                     editedCell.zIndex = (this.squareSize - 1) - i;
                 }
             }

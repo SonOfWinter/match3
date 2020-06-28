@@ -1,7 +1,7 @@
-import {action, computed, observable, reaction} from "mobx"
-import {RootStore} from "./RootStore";
+import { action, computed, observable, reaction } from "mobx"
+import { RootStore } from "./RootStore";
 import Match from "../domain/Match";
-import Grid, {MatchResult} from "../domain/Grid";
+import Grid, { MatchResult } from "../domain/Grid";
 
 const squareSize = 8;
 
@@ -37,7 +37,7 @@ export default class GridStore {
     }
 
 
-    forInitGridStat: ForInitGrid = {x: [], y: []};
+    forInitGridStat: ForInitGrid = { x: [], y: [] };
 
     reactionToNewMatch = reaction(
         () => this.matches,
@@ -45,29 +45,29 @@ export default class GridStore {
             const matches = newMatches.filter(x => !this.oldMatches.includes(x));
             matches.forEach(match => {
                 setTimeout(
-                    () => {this.rootStore.messageStore.addMatch(match)},
+                    () => { this.rootStore.messageStore.addMatch(match) },
                     400
                 );
                 if (match.suite === 2) {
                     setTimeout(
-                        () => {this.rootStore.statStore.addMatch3()},
+                        () => { this.rootStore.statStore.addMatch3() },
                         400
                     );
                 }
                 if (match.suite === 3) {
                     setTimeout(
-                        () => {this.rootStore.statStore.addMatch4()},
+                        () => { this.rootStore.statStore.addMatch4() },
                         400
                     );
                 }
                 if (match.suite === 4) {
                     setTimeout(
-                        () => {this.rootStore.statStore.addMatch5()},
+                        () => { this.rootStore.statStore.addMatch5() },
                         400
                     );
                 }
                 setTimeout(
-                    () => {this.rootStore.statStore.addColor(match.color, match.suite + 1)},
+                    () => { this.rootStore.statStore.addColor(match.color, match.suite + 1) },
                     400
                 );
             });
@@ -79,8 +79,8 @@ export default class GridStore {
     init() {
         this.grid = new Grid(squareSize);
         this.grid.cells.forEach(cell => {
-                this.rootStore.statStore.addColorCount(cell.name, 1);
-            }
+            this.rootStore.statStore.addColorCount(cell.name, 1);
+        }
         );
     }
 
@@ -98,7 +98,7 @@ export default class GridStore {
         const selectedCell = this.grid.selectedCell;
         let sc: SimpleCell | null = null;
         if (selectedCell !== null) {
-            sc = {x: selectedCell.x, y: selectedCell.y};
+            sc = { x: selectedCell.x, y: selectedCell.y };
         }
         if (this.grid.select(x, y)) {
             if (sc !== null) {
