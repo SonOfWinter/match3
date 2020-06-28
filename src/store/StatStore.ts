@@ -89,7 +89,6 @@ export default class StatStore {
 
     @action
     addColorCount = (color: string, count: number) => {
-        console.log(`addColorCount ${color} ${count}`);
         switch (color) {
             case 'blue':
                 this.blueCount = this.blueCount + count;
