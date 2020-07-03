@@ -31,9 +31,6 @@ export function SideCard() {
                 Puzzle
               </Typography>
               <Typography variant={"body1"}>
-                Possible move : ? {/*info.possibleMove*/}
-              </Typography>
-              <Typography variant={"body1"}>
                 Blue count : {info.blueCount}
               </Typography>
               <Typography variant={"body1"}>

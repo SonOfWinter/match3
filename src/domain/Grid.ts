@@ -18,8 +18,7 @@ export interface ForInitGrid {
 
 export interface MatchResult {
     cellsToRemove: SimpleCell[]
-    matches: Match[],
-    newGrid: any[]
+    matches: Match[]
 }
 
 export interface SimpleCell {
@@ -282,8 +281,7 @@ export default class Grid {
         });
         return {
             cellsToRemove: returnedCellsToRemove,
-            matches,
-            newGrid: this.cells
+            matches
         };
     }
 
@@ -302,8 +300,8 @@ export default class Grid {
         matches.forEach(simpleCell => {
             this.remove(simpleCell.x, simpleCell.y);
         });
-        return this.fillGrid(matches);
-
+        const result = this.fillGrid(matches);
+        return result;
     }
 
     fillGrid(matches: SimpleCell[]): Cell[] {

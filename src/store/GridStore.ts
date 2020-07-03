@@ -36,9 +36,6 @@ export default class GridStore {
         this.init();
     }
 
-
-    forInitGridStat: ForInitGrid = { x: [], y: [] };
-
     reactionToNewMatch = reaction(
         () => this.matches,
         (newMatches: Match[]) => {
@@ -80,8 +77,7 @@ export default class GridStore {
         this.grid = new Grid(squareSize);
         this.grid.cells.forEach(cell => {
             this.rootStore.statStore.addColorCount(cell.name, 1);
-        }
-        );
+        });
     }
 
     @computed

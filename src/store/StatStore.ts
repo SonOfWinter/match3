@@ -9,7 +9,6 @@ export default class StatStore {
     @observable purple: number = 0;
     @observable amber: number = 0;
     @observable grey: number = 0;
-    @observable possibleMove: number = 0;
     @observable blueCount: number = 0;
     @observable redCount: number = 0;
     @observable greenCount: number = 0;
@@ -38,7 +37,6 @@ export default class StatStore {
             match3: this.match3,
             match4: this.match4,
             match5: this.match5,
-            possibleMove: this.possibleMove,
             blueCount: this.blueCount,
             redCount: this.redCount,
             greenCount: this.greenCount,
@@ -109,10 +107,5 @@ export default class StatStore {
                 this.greyCount = this.greyCount + count;
                 break;
         }
-    }
-
-    @action
-    setPossibleMove = (count: number) => {
-        this.possibleMove = count;
     }
 }
