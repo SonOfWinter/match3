@@ -47,17 +47,28 @@ export default class StatStore {
     }
 
     @action
-    addMatch3() {
+    reset = () => {
+        this.match5 = 0;
+        this.blueCount = 0;
+        this.redCount = 0;
+        this.greenCount = 0;
+        this.purpleCount = 0;
+        this.amberCount = 0;
+        this.greyCount = 0;
+    }
+
+    @action
+    addMatch3 = () => {
         ++this.match3;
     }
 
     @action
-    addMatch4() {
+    addMatch4 = () => {
         ++this.match4;
     }
 
     @action
-    addMatch5() {
+    addMatch5 = () => {
         ++this.match5;
     }
 

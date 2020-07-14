@@ -90,6 +90,16 @@ export default class GridStore {
     }
 
     @action
+    reset = () => {
+        this.rootStore.statStore.reset();
+        this.grid = new Grid(squareSize);
+        this.grid.cells.forEach(cell => {
+            this.rootStore.statStore.addColorCount(cell.name, 1);
+        });
+        this.rootStore.messageStore.add('Reset');
+    }
+
+    @action
     select = (x: number, y: number) => {
         const selectedCell = this.grid.selectedCell;
         let sc: SimpleCell | null = null;
