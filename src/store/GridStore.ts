@@ -1,7 +1,7 @@
-import { action, computed, observable, reaction } from "mobx"
-import { RootStore } from "./RootStore";
+import {action, computed, makeAutoObservable, observable, reaction} from "mobx"
+import {RootStore} from "./RootStore";
 import Match from "../domain/Match";
-import Grid, { MatchResult } from "../domain/Grid";
+import Grid, {MatchResult} from "../domain/Grid";
 
 const squareSize = 8;
 
@@ -13,11 +13,20 @@ interface SimpleCell {
 export default class GridStore {
     private rootStore: RootStore;
 
-    @observable matches: Match[] = [];
-    @observable oldMatches: Match[] = [];
-    @observable grid: Grid;
+    matches: Match[] = [];
+    oldMatches: Match[] = [];
+    grid: Grid;
 
     constructor(rootStore: RootStore) {
+        makeAutoObservable(this, {
+            matches: observable,
+            oldMatches: observable,
+            grid: observable,
+            info: computed,
+            reset: action,
+            select: action,
+            removeMatches: action.bound
+        });
         this.rootStore = rootStore;
         this.init();
     }
@@ -25,39 +34,49 @@ export default class GridStore {
     reactionToNewMatch = reaction(
         () => this.matches,
         (newMatches: Match[]) => {
+            console.log('reactionToNewMatch');
             const matches = newMatches.filter(x => !this.oldMatches.includes(x));
             matches.forEach(match => {
                 setTimeout(
-                    () => { this.rootStore.messageStore.addMatch(match) },
+                    () => {
+                        this.rootStore.messageStore.addMatch(match)
+                    },
                     400
                 );
                 if (match.suite === 2) {
                     setTimeout(
-                        () => { this.rootStore.statStore.addMatch3() },
+                        () => {
+                            this.rootStore.statStore.addMatch3()
+                        },
                         400
                     );
                 }
                 if (match.suite === 3) {
                     setTimeout(
-                        () => { this.rootStore.statStore.addMatch4() },
+                        () => {
+                            this.rootStore.statStore.addMatch4()
+                        },
                         400
                     );
                 }
                 if (match.suite === 4) {
                     setTimeout(
-                        () => { this.rootStore.statStore.addMatch5() },
+                        () => {
+                            this.rootStore.statStore.addMatch5()
+                        },
                         400
                     );
                 }
                 setTimeout(
-                    () => { this.rootStore.statStore.addColor(match.color, match.suite + 1) },
+                    () => {
+                        this.rootStore.statStore.addColor(match.color, match.suite + 1)
+                    },
                     400
                 );
             });
             this.oldMatches = [...newMatches];
         }
     );
-
 
     init() {
         this.grid = new Grid(squareSize);
@@ -66,7 +85,6 @@ export default class GridStore {
         });
     }
 
-    @computed
     get info() {
         return {
             grid: this.grid,
@@ -75,7 +93,6 @@ export default class GridStore {
         };
     }
 
-    @action
     reset = () => {
         this.rootStore.statStore.reset();
         this.grid = new Grid(squareSize);
@@ -85,12 +102,11 @@ export default class GridStore {
         this.rootStore.messageStore.add('Reset');
     }
 
-    @action
     select = (x: number, y: number) => {
         const selectedCell = this.grid.selectedCell;
         let sc: SimpleCell | null = null;
         if (selectedCell !== null) {
-            sc = { x: selectedCell.x, y: selectedCell.y };
+            sc = {x: selectedCell.x, y: selectedCell.y};
         }
         if (this.grid.select(x, y)) {
             if (sc !== null) {
@@ -119,17 +135,6 @@ export default class GridStore {
         }
     }
 
-    @action.bound
-    countMatch(match: Match) {
-        this.matches.push(match);
-    }
-
-    @action.bound
-    getMatch(isCombo: boolean = false): MatchResult {
-        return this.grid.getGridMatch(isCombo);
-    }
-
-    @action.bound
     removeMatches(simpleCells: SimpleCell[]) {
         simpleCells.forEach(match => {
             const cell = this.grid.get(match.x, match.y);

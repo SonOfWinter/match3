@@ -1,4 +1,4 @@
-import {observable} from "mobx";
+import { runInAction, observable, makeObservable } from "mobx";
 import Cell from "./Cell";
 import Match from "./Match";
 
@@ -29,12 +29,19 @@ export interface SimpleCell {
 export default class Grid {
 
     private squareSize: number;
-    @observable canMove: boolean = true;
-    @observable cells: Cell[] = [];
-    @observable selectedCell: Cell | null = null;
-    @observable forInitGridStat: ForInitGrid = {x: [], y: []};
+    canMove: boolean = true;
+    cells: Cell[] = [];
+    selectedCell: Cell | null = null;
+    forInitGridStat: ForInitGrid = {x: [], y: []};
 
     constructor(squareSize: number) {
+        makeObservable(this, {
+            canMove: observable,
+            cells: observable,
+            selectedCell: observable,
+            forInitGridStat: observable
+        });
+
         this.squareSize = squareSize;
         for (let i: number = 0; i < squareSize; i++) {
             this.forInitGridStat.x[i] = {
@@ -288,10 +295,12 @@ export default class Grid {
     moveNewCells() {
         for (let x: number = 0; x < this.squareSize; x++) {
             for (let y: number = 0; y < this.squareSize; y++) {
-                let cell = this.get(x, y);
-                if (cell !== null && cell.top < 0) {
-                    cell.top = ((this.squareSize - 1) - y) * 12.5;
-                }
+                runInAction(() => {
+                    let cell = this.get(x, y);
+                    if (cell !== null && cell.top < 0) {
+                            cell.top = ((this.squareSize - 1) - y) * 12.5;
+                    }
+                });
             }
         }
     }

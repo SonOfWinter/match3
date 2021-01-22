@@ -1,31 +1,53 @@
-import { action, computed, observable } from "mobx";
-import { RootStore } from "./RootStore";
+import {makeObservable, action, computed, observable} from "mobx";
+import {RootStore} from "./RootStore";
 
 export default class StatStore {
 
-    @observable blue: number = 0;
-    @observable red: number = 0;
-    @observable green: number = 0;
-    @observable purple: number = 0;
-    @observable amber: number = 0;
-    @observable grey: number = 0;
-    @observable blueCount: number = 0;
-    @observable redCount: number = 0;
-    @observable greenCount: number = 0;
-    @observable purpleCount: number = 0;
-    @observable amberCount: number = 0;
-    @observable greyCount: number = 0;
-    @observable match3: number = 0;
-    @observable match4: number = 0;
-    @observable match5: number = 0;
+    blue: number = 0;
+    red: number = 0;
+    green: number = 0;
+    purple: number = 0;
+    amber: number = 0;
+    grey: number = 0;
+    blueCount: number = 0;
+    redCount: number = 0;
+    greenCount: number = 0;
+    purpleCount: number = 0;
+    amberCount: number = 0;
+    greyCount: number = 0;
+    match3: number = 0;
+    match4: number = 0;
+    match5: number = 0;
     private rootStore: RootStore;
 
     constructor(rootStore: RootStore) {
+        makeObservable(this, {
+            blue: observable,
+            red: observable,
+            green: observable,
+            purple: observable,
+            amber: observable,
+            grey: observable,
+            blueCount: observable,
+            redCount: observable,
+            greenCount: observable,
+            purpleCount: observable,
+            amberCount: observable,
+            greyCount: observable,
+            match3: observable,
+            match4: observable,
+            match5: observable,
+            info: computed,
+            reset: action,
+            addMatch3: action,
+            addMatch4: action,
+            addMatch5: action,
+            addColor: action,
+            addColorCount: action
+        })
         this.rootStore = rootStore;
     }
 
-
-    @computed
     get info() {
         return {
             blue: this.blue,
@@ -46,7 +68,6 @@ export default class StatStore {
         };
     }
 
-    @action
     reset = () => {
         this.match5 = 0;
         this.blueCount = 0;
@@ -57,22 +78,18 @@ export default class StatStore {
         this.greyCount = 0;
     }
 
-    @action
     addMatch3 = () => {
         ++this.match3;
     }
 
-    @action
     addMatch4 = () => {
         ++this.match4;
     }
 
-    @action
     addMatch5 = () => {
         ++this.match5;
     }
 
-    @action
     addColor = (color: string, number: number) => {
         switch (color) {
             case 'blue':
@@ -96,7 +113,6 @@ export default class StatStore {
         }
     }
 
-    @action
     addColorCount = (color: string, count: number) => {
         switch (color) {
             case 'blue':
