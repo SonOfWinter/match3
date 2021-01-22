@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { observer } from "mobx-react";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";

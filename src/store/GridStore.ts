@@ -5,23 +5,9 @@ import Grid, { MatchResult } from "../domain/Grid";
 
 const squareSize = 8;
 
-interface ColorStat {
-    blue: number;
-    red: number;
-    green: number;
-    purple: number;
-    amber: number;
-    grey: number;
-}
-
 interface SimpleCell {
     x: number;
     y: number;
-}
-
-interface ForInitGrid {
-    x: ColorStat[];
-    y: ColorStat[];
 }
 
 export default class GridStore {
